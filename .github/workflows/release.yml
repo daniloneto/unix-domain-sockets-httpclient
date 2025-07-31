@@ -1,0 +1,15 @@
+name: Release
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+    - run: dotnet pack -c Release -o .artifacts /p:ContinuousIntegrationBuild=true
+    - run: dotnet nuget push .artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
