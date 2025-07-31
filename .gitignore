@@ -1,0 +1,58 @@
+# .gitignore for a typical .NET project
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet packages
+*.nupkg
+# NuGet restore
+*.nuget
+
+# Others
+*.DS_Store
+*.log
+
+# Windows image file caches
+Thumbs.db
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# dotnet-specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Test results
+TestResults/
+
+# Coverage results
+coverage*
+
+# Temporary files
+~$*
+
+# Ignore sample build outputs
+samples/*/bin/
+samples/*/obj/
+
+# Ignore src build outputs
+src/*/bin/
+src/*/obj/
+
+# Ignore test build outputs
+tests/*/bin/
+tests/*/obj/

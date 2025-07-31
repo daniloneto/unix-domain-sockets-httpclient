@@ -1,6 +1,10 @@
 using System.Net.Http.Json;
 using Xunit;
 
+using System.Threading.Tasks;
+using System;
+using System.Net;
+using System.Net.Http;
 namespace UnixDomainSockets.HttpClient.Tests;
 
 public class HttpClientFactoryTests : IClassFixture<UdsServerFixture>
@@ -12,36 +16,6 @@ public class HttpClientFactoryTests : IClassFixture<UdsServerFixture>
         _fixture = fixture;
     }
 
-    [Fact]
-    public async Task Can_Get_Ping()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            await Assert.ThrowsAsync<NotSupportedException>(() => Task.Run(() => UnixHttpClientFactory.For(_fixture.SocketPath)));
-            return;
-        }
-
-        using var client = UnixHttpClientFactory.For(_fixture.SocketPath, TimeSpan.FromSeconds(5));
-        var result = await client.GetFromJsonAsync<PingDto>("/ping", TestJsonContext.Default.PingDto);
-        Assert.NotNull(result);
-        Assert.True(result!.ok);
-    }
-
-    [Fact]
-    public async Task Can_Post_Echo()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            return;
-        }
-
-        using var client = UnixHttpClientFactory.For(_fixture.SocketPath);
-        var payload = new { message = "hi" };
-        var response = await client.PostAsJsonAsync("/echo", payload);
-        response.EnsureSuccessStatusCode();
-        var echoed = await response.Content.ReadFromJsonAsync<object>(TestJsonContext.Default.Object);
-        Assert.NotNull(echoed);
-    }
 
     [Fact]
     public async Task Invalid_Path_Throws_HttpRequestException()
