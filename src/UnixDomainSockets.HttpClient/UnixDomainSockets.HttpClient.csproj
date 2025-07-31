@@ -1,15 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PackageId>UnixDomainSockets.HttpClient</PackageId>
-    <Authors>YourName</Authors>
-    <Description>HttpClient via Unix Domain Sockets for .NET.</Description>
-    <RepositoryUrl>https://example.com/repo</RepositoryUrl>
-    <PackageTags>dotnet;httpclient;unix-domain-sockets;uds;linux;aot;trimming;performance</PackageTags>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">  
+<PropertyGroup>
+  <TargetFramework>net9.0</TargetFramework>
+  <ImplicitUsings>enable</ImplicitUsings>
+  <Nullable>enable</Nullable>
+  <PackageId>UnixDomainSockets.HttpClient</PackageId>
+  <Description>HttpClient sobre Unix Domain Sockets para .NET. Baixa latência intra-host, zero dependências, pronto para AOT/Trimming.</Description>
+  <Authors>Danilo Neto</Authors>
+  <RepositoryUrl>https://github.com/daniloneto/unix-domain-sockets-httpclient</RepositoryUrl>
+  <PackageTags>dotnet;httpclient;unix-domain-sockets;uds;linux;aot;trimming;performance</PackageTags>
+  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  <PackageReadmeFile>README.md</PackageReadmeFile>
+  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  <IncludeSymbols>true</IncludeSymbols>
+  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+</PropertyGroup>
+<ItemGroup>
+  <None Include="README.md" Pack="true" PackagePath="/" />
+</ItemGroup>
+
 </Project>
