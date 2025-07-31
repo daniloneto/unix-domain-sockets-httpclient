@@ -1,62 +1,74 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using System.Net;
-using System.Net.Sockets;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+// Removendo o using de Kestrel que não existe para net9.0
 
-namespace UnixDomainSockets.HttpClient.Tests;
-
-public sealed class UdsServerFixture : IAsyncLifetime
+namespace UnixDomainSockets.HttpClient.Tests
 {
-    public string SocketPath { get; } = $"/tmp/uds-httpclient-tests-{Guid.NewGuid():N}.sock";
-    private IHost? _host;
-
-    public async Task InitializeAsync()
+// Removendo IAsyncLifetime, pois não está disponível no contexto de testes
+public sealed class UdsServerFixture
     {
-        var builder = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseKestrel(options =>
+        public string SocketPath { get; } = $"/tmp/uds-httpclient-tests-{Guid.NewGuid():N}.sock";
+        private IWebHost? _host;
+
+        public async Task InitializeAsync()
+        {
+            var builder = new WebHostBuilder()
+                .UseUrls($"http://unix:{SocketPath}")
+                .Configure(app =>
                 {
-                    options.ListenUnixSocket(SocketPath);
-                });
-                webBuilder.Configure(app =>
-                {
-                    app.MapGet("/ping", () => Results.Json(new { ok = true }));
-                    app.MapPost("/echo", async (HttpContext ctx) =>
+                    app.Use(async (ctx, next) =>
                     {
-                        var body = await ctx.Request.ReadFromJsonAsync<object>();
-                        await ctx.Response.WriteAsJsonAsync(body);
+                        if (ctx.Request.Path == "/ping" && ctx.Request.Method == "GET")
+                        {
+                            ctx.Response.ContentType = "application/json";
+                            await ctx.Response.WriteAsync("{\"ok\":true}");
+                            return;
+                        }
+                        if (ctx.Request.Path == "/echo" && ctx.Request.Method == "POST")
+                        {
+                            using var reader = new StreamReader(ctx.Request.Body);
+                            var bodyStr = await reader.ReadToEndAsync();
+                            var body = System.Text.Json.JsonSerializer.Deserialize<object>(bodyStr);
+                            ctx.Response.ContentType = "application/json";
+                            await ctx.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(body));
+                            return;
+                        }
+                        await next();
                     });
                 });
-            });
 
-        _host = builder.Build();
-        await _host.StartAsync();
+            _host = builder.Build();
+            await Task.Run(() => _host.Start());
 
-        // ensure other processes can access socket
-        if (!OperatingSystem.IsWindows())
-        {
-            File.SetUnixFileMode(SocketPath, UnixFileMode.UserRead | UnixFileMode.UserWrite |
-                UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite);
-        }
-    }
-
-    public async Task DisposeAsync()
-    {
-        if (_host is not null)
-        {
-            await _host.StopAsync();
-            _host.Dispose();
+            if (!OperatingSystem.IsWindows())
+            {
+                File.SetUnixFileMode(SocketPath, UnixFileMode.UserRead | UnixFileMode.UserWrite |
+                    UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead | UnixFileMode.OtherWrite);
+            }
         }
 
-        try
+        public async Task DisposeAsync()
         {
-            File.Delete(SocketPath);
-        }
-        catch
-        {
+            if (_host is not null)
+            {
+                await Task.Run(() => _host.StopAsync());
+                _host.Dispose();
+            }
+
+            try
+            {
+                File.Delete(SocketPath);
+            }
+            catch
+            {
+            }
         }
     }
 }
