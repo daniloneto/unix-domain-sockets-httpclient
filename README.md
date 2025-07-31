@@ -1,2 +1,5 @@
 # unix-domain-sockets-httpclient
-HttpClient sobre Unix Domain Sockets para .NET. Baixa latência intra‑host, zero dependências, pronto para AOT/Trimming.
+
+Cliente HTTP para Linux que usa Unix Domain Sockets (UDS) por baixo do HttpClient, reduzindo latência e overhead de loopback/TCP entre processos no mesmo host.
+
+Implementado com SocketsHttpHandler.ConnectCallback, compatível com AOT/Trimming e System.Text.Json com source‑generation.
