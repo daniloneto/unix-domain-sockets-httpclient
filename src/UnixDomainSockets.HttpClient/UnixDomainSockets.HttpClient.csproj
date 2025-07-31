@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>UnixDomainSockets.HttpClient</PackageId>
+    <Authors>YourName</Authors>
+    <Description>HttpClient via Unix Domain Sockets for .NET.</Description>
+    <RepositoryUrl>https://example.com/repo</RepositoryUrl>
+    <PackageTags>dotnet;httpclient;unix-domain-sockets;uds;linux;aot;trimming;performance</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+</Project>
